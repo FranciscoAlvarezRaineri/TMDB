@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { newList, clearList } from "../store/reducers/list";
+import { useDispatch } from "react-redux";
+import { newList } from "../store/reducers/list";
 import axios from "axios";
 import ListMovies from "./ListMovies";
 
 const Movies = () => {
   const dispatch = useDispatch();
-  const list = useSelector((state) => state.list);
   useEffect(() => {
     axios
       .get(

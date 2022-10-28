@@ -8,17 +8,14 @@ import ListMovies from "./ListMovies";
 import Welcome from "./Welcome";
 import Movies from "./Movies";
 import Shows from "./Shows";
+import LogIn from "./LogIn";
 
 const Main = () => {
-  const [searchMovie, setSearchMovie] = useState("");
-  const [searchUser, setSearchUser] = useState("");
-  const [movies, setMovies] = useState([]);
   const [users, setUsers] = useState([]);
   const [details, setDetails] = useState({});
   const [userDetails, setUserDetails] = useState({});
   const [userFavourites, setUserFavourites] = useState({});
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
+
   const [showFavs, setShowFavs] = useState(false);
 
   const [search, setSearch] = useState("");
@@ -66,22 +63,6 @@ const Main = () => {
     }
   }, [userDetails]);
 
-  const handleSearchUserSubmit = (e) => {
-    e.preventDefault();
-    axios
-      .get(`/api/user/search/${searchUser}`)
-      .then((res) => setUsers(res.data));
-  };
-
-  const handleSearchMovieSubmit = (e) => {
-    e.preventDefault();
-    axios
-      .get(`/api/movies/${searchMovie}`)
-      .then((res) => {
-        setMovies(res.data.results);
-      })
-      .catch((err) => console.log(err));
-  };
   const handleDetails = (e) => {
     axios
       .get(
@@ -93,18 +74,6 @@ const Main = () => {
       .catch((err) => {
         setDetails({ title: "Fail to load", overview: "" });
       });
-  };
-
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    axios
-      .post("/api/user/login", { name, password })
-      .then((res) => {
-        dispatch(logIn(res.data));
-        setName("");
-        setPassword("");
-      })
-      .catch((err) => console.log(err));
   };
 
   const handleLogOut = () => {
@@ -156,18 +125,45 @@ const Main = () => {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    console.log("search", search);
-    console.log("searchSelect", searchSelect);
+
+    switch (searchSelect) {
+      case "Movies":
+        console.log("search", search);
+        console.log("searchSelect", searchSelect);
+        axios
+          .get(`/api/movies/search/${search}`)
+          .then((res) => {
+            console.log(res);
+            dispatch(newList(res.data));
+          })
+          .catch((err) => console.log(err));
+        break;
+      case "TV Shows":
+        axios
+          .get(`/api/shows/search/${search}`)
+          .then((res) => dispatch(newList(res.data)))
+          .catch((err) => console.log(err));
+        break;
+      case "Users":
+        axios
+          .get(`/api/user/search/${search}`)
+          .then((res) => setUsers(res.data))
+          .catch((err) => console.log(err));
+        break;
+      default:
+        //Declaraciones ejecutadas cuando ninguno de los valores coincide con el valor de la expresión
+        break;
+    }
   };
   return (
     <>
       <h1>The Movie Database</h1>
-      <nav className=".navbar navbar-dark bg-dark navbar-expand-lg">
+      <nav className="navbar navbar-expand-lg">
         <div className="navbar-nav me-auto mb-2 mb-lg-0">
-          <Link className="nav-item btn btn-outline-light" to={`/movies`}>
+          <Link className="nav-item btn" to={`/movies`}>
             Movies
           </Link>
-          <Link className="nav-item btn btn-outline-light" to={`/shows`}>
+          <Link className="nav-item btn" to={`/shows`}>
             TV Shows
           </Link>
 
@@ -224,29 +220,24 @@ const Main = () => {
               )}
             </form>
           </div>
+
           <div className="nav-item">
-            <h3>User Login:</h3>
             {user.name ? (
-              <>
+              <div>
                 <h6>{user.name}</h6>
-                <button onClick={handleLogOut}>LogOut!</button>
-                <button onClick={handleFavourites}>Favourites</button>
-              </>
+
+                <button className="nav-item btn" onClick={handleLogOut}>
+                  LogOut!
+                </button>
+                <button className="nav-item btn" onClick={handleFavourites}>
+                  Favourites
+                </button>
+              </div>
             ) : (
               <>
-                <form onSubmit={handleLoginSubmit}>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  ></input>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  ></input>
-                  <button type="submit">LogIn!</button>
-                </form>
+                <Link className="nav-item btn" to={`/login`}>
+                  logIn
+                </Link>
               </>
             )}
           </div>
@@ -257,6 +248,7 @@ const Main = () => {
           <Route path="/" element={<Welcome />}></Route>
           <Route path="/movies" element={<Movies />}></Route>
           <Route path="/shows" element={<Shows />}></Route>
+          <Route path="/login" element={<LogIn />}></Route>
         </Routes>
         {showFavs ? (
           <>
@@ -299,9 +291,9 @@ const Main = () => {
             <></>
           )}
         </div>
-
+        <ListMovies />
         <div>
-          {movies.map((item) => {
+          {favourites.map((item) => {
             return (
               <div key={item.id}>
                 <span>{item.name}</span>
