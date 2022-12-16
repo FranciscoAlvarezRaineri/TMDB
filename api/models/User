@@ -1,7 +1,6 @@
 const db = require("../db");
 const S = require("sequelize");
 const bcrypt = require("bcrypt");
-const { user } = require("pg/lib/defaults");
 
 class User extends S.Model {}
 
