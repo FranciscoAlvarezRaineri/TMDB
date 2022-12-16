@@ -1,6 +1,5 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { newList, clearList } from "../store/reducers/list";
+import { useSelector } from "react-redux";
 import ShowCard from "../components/ShowCard";
 
 const ListShows = () => {
