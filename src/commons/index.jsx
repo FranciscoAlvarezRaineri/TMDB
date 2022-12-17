@@ -36,14 +36,8 @@ const Main = () => {
   const handleSignupSubmit = (e) => {
     e.preventDefault();
     createUser(email, password, name, lastname)
-      .then(() => {
-        dispatch(
-          logIn({
-            email,
-            name,
-            lastname,
-          })
-        );
+      .then((user) => {
+        dispatch(logIn({ ...user }));
         setEmail("");
         setPassword("");
         setName("");

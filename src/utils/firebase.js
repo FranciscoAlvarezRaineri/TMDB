@@ -6,7 +6,14 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+} from "firebase/firestore";
+import { User, userConverter } from "./User";
 
 // TODO: Add SDKs for Firebase products that you want to use
 
@@ -27,17 +34,20 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+const users = collection(db, "users");
+
 const createUser = (email, password, name, lastname) =>
   createUserWithEmailAndPassword(auth, email, password).then((response) =>
-    addDoc(collection(db, "users"), {
-      name,
-      lastname,
-      email,
-      favorites: [],
-      userUID: response.user.uid,
-    }).then(() => {
-      return { email, name, lastname };
-    })
+    setDoc(
+      doc(users, response.user.uid).withConverter(userConverter),
+      new User(name, lastname, email, [])
+    )
+      .then(() =>
+        getDoc(doc(users, response.user.uid).withConverter(userConverter)).then(
+          (response) => response.data()
+        )
+      )
+      .catch((err) => console.log(err))
   );
 
 const signIn = (email, password) =>
