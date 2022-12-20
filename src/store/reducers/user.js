@@ -2,7 +2,7 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 
 const logIn = createAction("logIn");
 const logOut = createAction("logOut");
-const initialState = { name: "", password: "", favourites: [] };
+const initialState = {};
 
 const userReducer = createReducer(initialState, {
   logIn: (state, action) => action.payload,
