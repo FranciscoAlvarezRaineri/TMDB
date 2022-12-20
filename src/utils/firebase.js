@@ -51,6 +51,12 @@ const createUser = (email, password, name, lastname) =>
   );
 
 const signIn = (email, password) =>
-  signInWithEmailAndPassword(auth, email, password);
+  signInWithEmailAndPassword(auth, email, password)
+    .then((response) =>
+      getDoc(doc(users, response.user.uid).withConverter(userConverter)).then(
+        (response) => response.data()
+      )
+    )
+    .catch((err) => console.log(err));
 
 export { createUser, signIn };
