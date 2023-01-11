@@ -1,3 +1,4 @@
+// El constructor del objeto de usuario:
 class User {
   constructor(name, lastname, email, favorites) {
     this.name = name;
@@ -10,7 +11,7 @@ class User {
   }
 }
 
-// Firestore data converter
+// El conversor de firestore:
 const userConverter = {
   toFirestore: (user) => {
     return {
