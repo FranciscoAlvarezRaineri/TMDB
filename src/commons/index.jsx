@@ -5,7 +5,9 @@ import { allMoviesByPopularity } from "../utils/tmdb";
 
 //Components
 import NavBar from "./NavBar";
+import SideBar from "./SideBar";
 import Footer from "./Footer";
+
 //Material
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
@@ -21,6 +23,7 @@ import Pagination from "@mui/material/Pagination";
 const Main = () => {
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
+  const [open, setOpen] = useState(false);
   const user = useSelector((state) => state.user);
   const list = useSelector((state) => state.list);
 
@@ -32,7 +35,18 @@ const Main = () => {
 
   return (
     <>
-      <NavBar></NavBar>
+      <SideBar
+        open={open}
+        handleDrawerChange={() => {
+          setOpen(!open);
+        }}
+      />
+      <NavBar
+        open={open}
+        handleDrawerChange={() => {
+          setOpen(!open);
+        }}
+      />
       <main>
         <Box
           sx={{
