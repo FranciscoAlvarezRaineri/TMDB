@@ -1,11 +1,23 @@
 import axios from "axios";
 
-const allByPopularity = (index = 1) =>
+const TMDB_API = "https://api.themoviedb.org/3/";
+const TMDB_KEY = "api_key=7f7b6b76f674af7ac35279fb451df8dc";
+
+const discoverMovie = `${TMDB_API}discover/movie?${TMDB_KEY}`;
+const searchMovie = `${TMDB_API}search/movie?${TMDB_KEY}`;
+
+const allMoviesByPopularity = (index) =>
   axios
     .get(
-      `https://api.themoviedb.org/3/discover/movie?api_key=7f7b6b76f674af7ac35279fb451df8dc&sort_by=popularity.desc&include_adult=false&include_video=false&page=${index}`
+      `${discoverMovie}&sort_by=popularity.desc&include_adult=false&include_video=false&page=${index}`
     )
     .then((response) => response.data.results)
     .catch((err) => console.log(err));
 
-export { allByPopularity };
+const searchMovies = (search, index) =>
+  axios
+    .get(`${searchMovie}&query=${search}&page=${index}&include_adult=false`)
+    .then((response) => response.data.results)
+    .catch((err) => console.log(err));
+
+export { allMoviesByPopularity, searchMovies };
