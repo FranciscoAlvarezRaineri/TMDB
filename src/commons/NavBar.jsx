@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { newList, clearList } from "../store/reducers/list";
 import { logOut } from "../store/reducers/user";
+import { searchMovies } from "../utils/tmdb";
 
 import LogInBox from "./LogInBox";
 
@@ -32,6 +34,14 @@ export default function NavBar() {
     setAnchorEl(null);
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    searchMovies(search).then((result) => {
+      console.log(result);
+      dispatch(newList(result));
+    });
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed">
@@ -40,13 +50,17 @@ export default function NavBar() {
             TMDB
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          <Input
-            placeholder="Search…"
-            inputProps={{ "aria-label": "search" }}
-            value={search}
-            onChange={(e) => setSearch(e.value)}
-          />
-          <SearchIcon />
+          <form onSubmit={(e) => handleSearch(e)}>
+            <Input
+              placeholder="Search…"
+              name="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <Button type="submit" variant="outlined">
+              <SearchIcon />
+            </Button>
+          </form>
           {user.email ? (
             <IconButton
               size="large"
