@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { newList } from "../store/reducers/list";
-import { allMoviesByPopularity } from "../utils/tmdb";
+import {
+  allMoviesByPopularity,
+  allMoviesByGenre,
+  allMoviesByYear,
+} from "../utils/tmdb";
 
 //Components
 import NavBar from "./NavBar";
@@ -36,6 +40,20 @@ const Main = () => {
     });
   }, [page]);
 
+  const handleFilterSubmit = (genreId) => {
+    setPage(1);
+    allMoviesByGenre(page, genreId).then((result) => {
+      dispatch(newList(result));
+    });
+  };
+
+  const handleYearSubmit = (years) => {
+    setPage(1);
+    allMoviesByYear(page, years).then((result) => {
+      dispatch(newList(result));
+    });
+  };
+
   return (
     <>
       <SideBar
@@ -43,6 +61,8 @@ const Main = () => {
         handleDrawerChange={() => {
           setOpen(!open);
         }}
+        handleFilterSubmit={handleFilterSubmit}
+        handleYearSubmit={handleYearSubmit}
       />
       <NavBar
         open={open}
