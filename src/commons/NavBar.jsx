@@ -14,8 +14,8 @@ import InputBase from "@mui/material/InputBase";
 import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+import Button from "@mui/material/Button";
 
-import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
@@ -62,7 +62,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function NavBar({ open, handleDrawerChange }) {
+export default function NavBar({ open, handleDrawerChange, handleLogInBox }) {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
@@ -212,8 +212,9 @@ export default function NavBar({ open, handleDrawerChange }) {
               />
             </Search>
           </form>
-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            {/* <IconButton
+          {user.email ? (
+            <Box sx={{ display: { xs: "none", md: "flex" } }}>
+              {/* <IconButton
               size="large"
               aria-label="show 4 new mails"
               color="inherit"
@@ -231,18 +232,28 @@ export default function NavBar({ open, handleDrawerChange }) {
                 <NotificationsIcon />
               </Badge>
             </IconButton> */}
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
+              <IconButton
+                size="large"
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+            </Box>
+          ) : (
+            <Button
+              onClick={handleLogInBox}
+              variant="outlined"
               color="inherit"
+              sx={{ ml: 2 }}
             >
-              <AccountCircle />
-            </IconButton>
-          </Box>
+              Log In
+            </Button>
+          )}
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
