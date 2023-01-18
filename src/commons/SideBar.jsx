@@ -1,5 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled, useTheme } from "@mui/material/styles";
+import { useDispatch } from "react-redux";
+import { newList } from "../store/reducers/list";
+
+import { getMovieGenres } from "../utils/tmdb";
 
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -11,6 +15,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
 import ListItemButton from "@mui/material/ListItemButton";
 import Button from "@mui/material/Button";
+import Slider from "@mui/material/Slider";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -46,17 +51,40 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-export default function SideBar({ open, handleDrawerChange }) {
+export default function SideBar({
+  open,
+  handleDrawerChange,
+  handleFilterSubmit,
+  handleYearSubmit,
+}) {
+  const dispatch = useDispatch();
   const theme = useTheme();
   const [openIndex, setOpenIndex] = useState(0);
-  const [genre, setGenre] = useState([]);
-  const [year, setYear] = useState([]);
+  // const [genre, setGenre] = useState([]);
+  // const [year, setYear] = useState([]);
+  const [allGenres, setAllGenres] = useState([]);
+  const [years, setYears] = React.useState([1874, 2023]);
 
   const openCategory = (index) => {
     openIndex === index ? setOpenIndex(0) : setOpenIndex(index);
   };
 
-  const handleFilterSubmit = () => {};
+  const handleYearSlider = (event, newValue, activeThumb) => {
+    if (!Array.isArray(newValue)) {
+      return;
+    }
+    if (activeThumb === 0) {
+      setYears([Math.min(newValue[0], years[1]), years[1]]);
+    } else {
+      setYears([years[0], Math.max(newValue[1], years[0])]);
+    }
+  };
+
+  useEffect(() => {
+    getMovieGenres().then((result) => {
+      setAllGenres(result);
+    });
+  }, []);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -95,9 +123,18 @@ export default function SideBar({ open, handleDrawerChange }) {
           </ListItemButton>
           <Collapse in={openIndex === 1} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItemButton sx={{ pl: 4 }}>
-                <ListItemText primary="Starred" />
-              </ListItemButton>
+              {/* <ListItemButton sx={{ pl: 4 }}>
+                <ListItemText primary="All" />
+              </ListItemButton> */}
+              {allGenres.map((genre, i) => (
+                <ListItemButton
+                  sx={{ pl: 4 }}
+                  key={`genre-${i}`}
+                  onClick={() => handleFilterSubmit(genre.id)}
+                >
+                  <ListItemText primary={genre.name} />
+                </ListItemButton>
+              ))}
             </List>
           </Collapse>
 
@@ -107,21 +144,33 @@ export default function SideBar({ open, handleDrawerChange }) {
           </ListItemButton>
           <Collapse in={openIndex === 2} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItemButton sx={{ pl: 4 }}>
-                <ListItemText primary="Starred" />
-              </ListItemButton>
+              <Box sx={{ mr: 2, ml: 2, mt: 4 }}>
+                <Slider
+                  getAriaLabel={() => "Minimum distance"}
+                  value={years}
+                  onChange={handleYearSlider}
+                  getAriaValueText={""}
+                  valueLabelDisplay="on"
+                  disableSwap
+                  min={1874}
+                  max={2023}
+                />
+              </Box>
+              <Box
+                display="flex"
+                justifyContent="flex-end"
+                alignItems="flex-end"
+                m={1}
+              >
+                <Button
+                  variant="outlined"
+                  onClick={() => handleYearSubmit(years)}
+                >
+                  Submit
+                </Button>
+              </Box>
             </List>
           </Collapse>
-          <Box
-            display="flex"
-            justifyContent="flex-end"
-            alignItems="flex-end"
-            m={1}
-          >
-            <Button variant="outlined" onClick={() => handleFilterSubmit}>
-              Submit
-            </Button>
-          </Box>
         </List>
       </Drawer>
       <Main open={open}>
