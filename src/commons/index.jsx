@@ -19,11 +19,14 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Grid from "@mui/material/Grid";
 import Pagination from "@mui/material/Pagination";
+import LogInBox from "./LogInBox";
+import Modal from "@mui/material/Modal";
 
 const Main = () => {
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);
+  const [openLogInBox, setOpenLogInBox] = useState(false);
   const user = useSelector((state) => state.user);
   const list = useSelector((state) => state.list);
 
@@ -46,7 +49,16 @@ const Main = () => {
         handleDrawerChange={() => {
           setOpen(!open);
         }}
+        handleLogInBox={() => setOpenLogInBox(true)}
       />
+      <Modal
+        open={openLogInBox}
+        onClose={() => setOpenLogInBox(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <LogInBox handleLogInBox={() => setOpenLogInBox(false)} />
+      </Modal>
       <main>
         <Box
           sx={{
