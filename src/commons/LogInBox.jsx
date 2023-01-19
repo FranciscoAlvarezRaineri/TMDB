@@ -9,7 +9,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
-const LogInBox = () => {
+const LogInBox = ({ handleLogInBox }) => {
   const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
@@ -25,6 +25,7 @@ const LogInBox = () => {
         dispatch(logIn({ ...user }));
         setEmail("");
         setPassword("");
+        handleLogInBox();
       })
       .catch((err) => {
         console.log(err);
@@ -40,13 +41,14 @@ const LogInBox = () => {
         setPassword("");
         setName("");
         setLastname("");
+        handleLogInBox();
       })
       .catch((err) => {
         console.log(err);
       });
   };
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs" sx={{ backgroundColor: "white" }}>
       <Typography variant="h4" sx={{ mt: 2 }} align="center">
         Welcome!
       </Typography>

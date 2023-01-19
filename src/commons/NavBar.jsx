@@ -1,125 +1,275 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { newList, clearList } from "../store/reducers/list";
 import { logOut } from "../store/reducers/user";
-
-import LogInBox from "./LogInBox";
+import { searchMovies } from "../utils/tmdb";
+import { styled, alpha } from "@mui/material/styles";
 
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
+import InputBase from "@mui/material/InputBase";
+import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import Input from "@mui/material/Input";
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
 
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import MailIcon from "@mui/icons-material/Mail";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import MoreIcon from "@mui/icons-material/MoreVert";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
-export default function NavBar() {
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  "&:hover": {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginRight: "auto",
+  marginLeft: "auto",
+  width: "100%",
+  [theme.breakpoints.up("sm")]: {
+    marginLeft: theme.spacing(3),
+    width: "auto",
+  },
+}));
+
+const SearchIconWrapper = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: "inherit",
+  "& .MuiInputBase-input": {
+    padding: theme.spacing(1, 1, 1, 0),
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("md")]: {
+      width: "20ch",
+    },
+  },
+}));
+
+export default function NavBar({ open, handleDrawerChange, handleLogInBox }) {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [search, setSearch] = useState("");
-  const [logInPop, setLogInPop] = useState(false);
 
   const isMenuOpen = Boolean(anchorEl);
+  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    searchMovies(search).then((result) => {
+      console.log(result);
+      dispatch(newList(result));
+    });
+  };
+
+  const handleProfileMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchorEl(null);
+  };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+    handleMobileMenuClose();
   };
+
+  const handleMobileMenuOpen = (event) => {
+    setMobileMoreAnchorEl(event.currentTarget);
+  };
+
+  const menuId = "primary-search-account-menu";
+  const renderMenu = (
+    <Menu
+      anchorEl={anchorEl}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      id={menuId}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={isMenuOpen}
+      onClose={handleMenuClose}
+    >
+      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+    </Menu>
+  );
+
+  const mobileMenuId = "primary-search-account-menu-mobile";
+  const renderMobileMenu = (
+    <Menu
+      anchorEl={mobileMoreAnchorEl}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      id={mobileMenuId}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={isMobileMenuOpen}
+      onClose={handleMobileMenuClose}
+    >
+      <MenuItem>
+        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+          <Badge badgeContent={4} color="error">
+            <MailIcon />
+          </Badge>
+        </IconButton>
+        <p>Messages</p>
+      </MenuItem>
+      <MenuItem>
+        <IconButton
+          size="large"
+          aria-label="show 17 new notifications"
+          color="inherit"
+        >
+          <Badge badgeContent={17} color="error">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+        <p>Notifications</p>
+      </MenuItem>
+      <MenuItem onClick={handleProfileMenuOpen}>
+        <IconButton
+          size="large"
+          aria-label="account of current user"
+          aria-controls="primary-search-account-menu"
+          aria-haspopup="true"
+          color="inherit"
+        >
+          <AccountCircle />
+        </IconButton>
+        <p>Profile</p>
+      </MenuItem>
+    </Menu>
+  );
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed">
+      <AppBar position="fixed" open={open}>
         <Toolbar>
-          <Typography variant="h6" noWrap component="div">
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerChange}
+            edge="start"
+            sx={{ mr: 2, ...(open && { display: "none" }) }}
+          >
+            <ChevronRightIcon fontSize="large" />
+          </IconButton>
+          <Typography
+            variant="h6"
+            noWrap
+            sx={{ display: { xs: "none", sm: "block" } }}
+          >
             TMDB
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          <Input
-            placeholder="Search…"
-            inputProps={{ "aria-label": "search" }}
-            value={search}
-            onChange={(e) => setSearch(e.value)}
-          />
-          <SearchIcon />
+          <form
+            onSubmit={(e) => {
+              handleSearch(e);
+            }}
+          >
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+              />
+            </Search>
+          </form>
           {user.email ? (
-            <IconButton
+            <Box sx={{ display: { xs: "none", md: "flex" } }}>
+              {/* <IconButton
               size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls="primary-search-account-menu"
-              aria-haspopup="true"
-              onClick={(event) => setAnchorEl(event.currentTarget)}
+              aria-label="show 4 new mails"
               color="inherit"
             >
-              <AccountCircle />
+              <Badge badgeContent={4} color="error">
+                <MailIcon />
+              </Badge>
             </IconButton>
-          ) : (
-            <>
-              <Button
-                type="button"
-                variant="contained"
-                sx={{ ml: 2 }}
-                onClick={() => setLogInPop(true)}
+            <IconButton
+              size="large"
+              aria-label="show 17 new notifications"
+              color="inherit"
+            >
+              <Badge badgeContent={17} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton> */}
+              <IconButton
+                size="large"
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit"
               >
-                Sign Up
-              </Button>
-              <Dialog open={logInPop} onClose={() => setLogInPop(false)}>
-                <LogInBox />
-              </Dialog>
-            </>
+                <AccountCircle />
+              </IconButton>
+            </Box>
+          ) : (
+            <Button
+              onClick={handleLogInBox}
+              variant="outlined"
+              color="inherit"
+              sx={{ ml: 2 }}
+            >
+              Log In
+            </Button>
           )}
+          <Box sx={{ display: { xs: "flex", md: "none" } }}>
+            <IconButton
+              size="large"
+              aria-label="show more"
+              aria-controls={mobileMenuId}
+              aria-haspopup="true"
+              onClick={handleMobileMenuOpen}
+              color="inherit"
+            >
+              <MoreIcon />
+            </IconButton>
+          </Box>
         </Toolbar>
       </AppBar>
-      {
-        <Menu
-          anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          id="primary-search-account-menu"
-          keepMounted
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          open={isMenuOpen}
-          onClose={() => {
-            handleMenuClose();
-          }}
-        >
-          <MenuItem>{user.name}</MenuItem>
-          <MenuItem
-            onClick={() => {
-              handleMenuClose();
-            }}
-          >
-            Favorites
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              handleMenuClose();
-            }}
-          >
-            My account
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              handleMenuClose();
-              setLogInPop(false);
-              dispatch(logOut());
-            }}
-          >
-            Sign Out
-          </MenuItem>
-        </Menu>
-      }
+      {renderMobileMenu}
+      {renderMenu}
     </Box>
   );
 }
