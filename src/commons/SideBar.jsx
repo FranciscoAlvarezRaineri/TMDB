@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { styled, useTheme } from "@mui/material/styles";
-import { useDispatch } from "react-redux";
-import { newList } from "../store/reducers/list";
+import { useSelector, useDispatch } from "react-redux";
+import { modifyUrl } from "../store/reducers/discoverUrl";
 
 import { getMovieGenres } from "../utils/tmdb";
 
@@ -51,19 +51,14 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-export default function SideBar({
-  open,
-  handleDrawerChange,
-  handleFilterSubmit,
-  handleYearSubmit,
-}) {
+export default function SideBar({ open, handleDrawerChange }) {
   const dispatch = useDispatch();
   const theme = useTheme();
   const [openIndex, setOpenIndex] = useState(0);
-  // const [genre, setGenre] = useState([]);
-  // const [year, setYear] = useState([]);
+  // const [genres, setGenres] = useState([]);
   const [allGenres, setAllGenres] = useState([]);
-  const [years, setYears] = React.useState([1874, 2023]);
+  const [years, setYears] = React.useState([1873, 2023]);
+  const discoverUrl = useSelector((state) => state.discoverUrl);
 
   const openCategory = (index) => {
     openIndex === index ? setOpenIndex(0) : setOpenIndex(index);
@@ -85,6 +80,13 @@ export default function SideBar({
       setAllGenres(result);
     });
   }, []);
+
+  const handleYearSubmit = () =>
+    dispatch(modifyUrl({ page: 1, yeargte: years[0], yearlte: years[1] }));
+
+  const handleFilterSubmit = (genreId) => {
+    dispatch(modifyUrl({ page: 1, genres: genreId }));
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -152,7 +154,7 @@ export default function SideBar({
                   getAriaValueText={""}
                   valueLabelDisplay="on"
                   disableSwap
-                  min={1874}
+                  min={1873}
                   max={2023}
                 />
               </Box>

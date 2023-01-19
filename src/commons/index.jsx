@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { newList } from "../store/reducers/list";
-import {
-  allMoviesByPopularity,
-  allMoviesByGenre,
-  allMoviesByYear,
-} from "../utils/tmdb";
+import { modifyUrl } from "../store/reducers/discoverUrl";
+import { allMoviesByGenre, allMoviesByYear } from "../utils/tmdb";
+import { discover } from "../utils/tmdb/index";
 
 //Components
 import NavBar from "./NavBar";
@@ -29,30 +27,41 @@ import Modal from "@mui/material/Modal";
 const Main = () => {
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(0);
+  const [resultsCount, setResultsCount] = useState(0);
   const [open, setOpen] = useState(false);
   const [openLogInBox, setOpenLogInBox] = useState(false);
   const user = useSelector((state) => state.user);
   const list = useSelector((state) => state.list);
+  const discoverUrl = useSelector((state) => state.discoverUrl);
 
   useEffect(() => {
-    allMoviesByPopularity(page).then((result) => {
-      dispatch(newList(result));
-    });
-  }, [page]);
+    const {
+      route,
+      media,
+      TMDB_KEY,
+      lang,
+      sort,
+      adult,
+      video,
+      page,
+      yeargte,
+      yearlte,
+      genres,
+    } = discoverUrl;
 
-  const handleFilterSubmit = (genreId) => {
-    setPage(1);
-    allMoviesByGenre(page, genreId).then((result) => {
-      dispatch(newList(result));
-    });
-  };
+    const url = `${route}${media}?${TMDB_KEY}&language=${lang}&sort_by=${sort}&include_adult=${adult}&include_video=${video}&page=${page}${
+      yeargte ? `&release_date.gte=${yeargte}` : ""
+    }${yearlte ? `&release_date.lte=${yearlte}` : ""}${
+      genres ? `&with_genres=${genres}` : ""
+    }`;
 
-  const handleYearSubmit = (years) => {
-    setPage(1);
-    allMoviesByYear(page, years).then((result) => {
-      dispatch(newList(result));
+    discover(url).then((data) => {
+      setPageCount(data.total_pages);
+      setResultsCount(data.total_results);
+      dispatch(newList(data.results));
     });
-  };
+  }, [discoverUrl]);
 
   return (
     <>
@@ -61,8 +70,6 @@ const Main = () => {
         handleDrawerChange={() => {
           setOpen(!open);
         }}
-        handleFilterSubmit={handleFilterSubmit}
-        handleYearSubmit={handleYearSubmit}
       />
       <NavBar
         open={open}
@@ -83,9 +90,7 @@ const Main = () => {
         <Box
           sx={{
             bgcolor: "background.paper",
-            pt: 8,
             pb: 6,
-            mt: 3,
           }}
         >
           <Container maxWidth="sm">
@@ -115,16 +120,20 @@ const Main = () => {
           display="flex"
           justifyContent="center"
           alignItems="center"
+          flexDirection="column"
         >
           <Pagination
-            count={1000}
-            page={page}
+            count={pageCount > 500 ? 500 : pageCount}
+            page={discoverUrl.page}
             onChange={(event, value) => {
-              setPage(value);
+              dispatch(modifyUrl({ page: value }));
             }}
             siblingCount={0}
-            boundaryCount={0}
+            boundaryCount={1}
           />
+          <Typography variant="h6" textAlign="center">{`Showing results: ${
+            discoverUrl.page * 20 - 19
+          } to ${discoverUrl.page * 20} of ${resultsCount}`}</Typography>
         </Box>
 
         <Container sx={{ py: 8 }} maxWidth="lg">
@@ -167,15 +176,19 @@ const Main = () => {
           display="flex"
           justifyContent="center"
           alignItems="center"
+          flexDirection="column"
         >
+          <Typography variant="h6" textAlign="center">{`Showing results: ${
+            discoverUrl.page * 20 - 19
+          } to ${discoverUrl.page * 20} of ${resultsCount}`}</Typography>
           <Pagination
-            count={10}
-            page={page}
+            count={pageCount > 500 ? 500 : pageCount}
+            page={discoverUrl.page}
             onChange={(event, value) => {
-              setPage(value);
+              dispatch(modifyUrl({ page: value }));
             }}
             siblingCount={0}
-            boundaryCount={0}
+            boundaryCount={1}
           />
         </Box>
       </main>
