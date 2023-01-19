@@ -47,29 +47,21 @@ const Main = () => {
       page,
       yeargte,
       yearlte,
+      genres,
     } = discoverUrl;
-    const url = `${route}${media}?${TMDB_KEY}&language=${lang}&sort_by=${sort}&include_adult=${adult}&include_video=${video}&page=${page}`;
+
+    const url = `${route}${media}?${TMDB_KEY}&language=${lang}&sort_by=${sort}&include_adult=${adult}&include_video=${video}&page=${page}${
+      yeargte ? `&release_date.gte=${yeargte}` : ""
+    }${yearlte ? `&release_date.lte=${yearlte}` : ""}${
+      genres ? `&with_genres=${genres}` : ""
+    }`;
+
     discover(url).then((data) => {
-      console.log(data);
       setPageCount(data.total_pages);
       setResultsCount(data.total_results);
       dispatch(newList(data.results));
     });
   }, [discoverUrl]);
-
-  const handleFilterSubmit = (genreId) => {
-    setPage(1);
-    allMoviesByGenre(page, genreId).then((result) => {
-      dispatch(newList(result));
-    });
-  };
-
-  const handleYearSubmit = (years) => {
-    setPage(1);
-    allMoviesByYear(page, years).then((result) => {
-      dispatch(newList(result));
-    });
-  };
 
   return (
     <>
@@ -78,8 +70,6 @@ const Main = () => {
         handleDrawerChange={() => {
           setOpen(!open);
         }}
-        handleFilterSubmit={handleFilterSubmit}
-        handleYearSubmit={handleYearSubmit}
       />
       <NavBar
         open={open}
@@ -100,9 +90,7 @@ const Main = () => {
         <Box
           sx={{
             bgcolor: "background.paper",
-            pt: 8,
             pb: 6,
-            mt: 3,
           }}
         >
           <Container maxWidth="sm">
@@ -135,18 +123,17 @@ const Main = () => {
           flexDirection="column"
         >
           <Pagination
-            count={pageCount}
+            count={pageCount > 500 ? 500 : pageCount}
             page={discoverUrl.page}
             onChange={(event, value) => {
               dispatch(modifyUrl({ page: value }));
-              console.log(value);
             }}
             siblingCount={0}
             boundaryCount={1}
-          />{" "}
+          />
           <Typography variant="h6" textAlign="center">{`Showing results: ${
-            page * 20 - 19
-          } to ${page * 20} of ${resultsCount}`}</Typography>
+            discoverUrl.page * 20 - 19
+          } to ${discoverUrl.page * 20} of ${resultsCount}`}</Typography>
         </Box>
 
         <Container sx={{ py: 8 }} maxWidth="lg">
@@ -191,11 +178,11 @@ const Main = () => {
           alignItems="center"
           flexDirection="column"
         >
-          <Typography variant="h6" textAlign="center">{`Showing: ${
-            20 - page * 20 + 1
-          } ${page * 20} of ${resultsCount}`}</Typography>
+          <Typography variant="h6" textAlign="center">{`Showing results: ${
+            discoverUrl.page * 20 - 19
+          } to ${discoverUrl.page * 20} of ${resultsCount}`}</Typography>
           <Pagination
-            count={10}
+            count={pageCount > 500 ? 500 : pageCount}
             page={discoverUrl.page}
             onChange={(event, value) => {
               dispatch(modifyUrl({ page: value }));

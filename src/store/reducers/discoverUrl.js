@@ -10,8 +10,9 @@ const initialState = {
   adult: "false",
   video: "false",
   page: 1,
-  yeargte: "1984",
-  yearlte: "2023",
+  yeargte: "1800",
+  yearlte: "2024",
+  genres: "",
 };
 
 const discoverUrlReducer = createReducer(initialState, {
