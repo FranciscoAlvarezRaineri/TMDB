@@ -2,9 +2,7 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 
 const modifyUrl = createAction("modifyUrl");
 const initialState = {
-  route: "https://api.themoviedb.org/3/discover",
   media: "/movie",
-  TMDB_KEY: "api_key=7f7b6b76f674af7ac35279fb451df8dc",
   lang: "en-US",
   sort: "popularity.desc",
   adult: "false",
@@ -13,6 +11,7 @@ const initialState = {
   yeargte: "1800",
   yearlte: "2024",
   genres: [],
+  voteCount: 0,
 };
 
 const discoverUrlReducer = createReducer(initialState, {

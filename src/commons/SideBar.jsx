@@ -14,15 +14,15 @@ import List from "@mui/material/List";
 import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
 import ListItemButton from "@mui/material/ListItemButton";
-import Button from "@mui/material/Button";
 import Slider from "@mui/material/Slider";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
+import Typography from "@mui/material/Typography";
+import Switch from "@mui/material/Switch";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { Typography } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -56,12 +56,26 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 export default function SideBar({ open, handleDrawerChange }) {
   const dispatch = useDispatch();
-  const theme = useTheme();
+
   const [openIndex, setOpenIndex] = useState(0);
-  // const [genres, setGenres] = useState([]);
+
+  const orders = [
+    { name: "Popularity", value: "popularity" },
+    { name: "Release Date", value: "release_date" },
+    { name: "Title", value: "original_title" },
+    { name: "Calification", value: "vote_average" },
+  ];
+
+  const [order, setOrder] = useState("popularity");
+  const [desc, setDesc] = useState(true);
+
+  const [voteCount, setVoteCount] = useState(0);
+
   const [allGenres, setAllGenres] = useState([]);
   const [genres, setGenres] = useState([]);
+
   const [years, setYears] = React.useState([1873, 2023]);
+
   const discoverUrl = useSelector((state) => state.discoverUrl);
 
   const openCategory = (index) => {
@@ -88,9 +102,16 @@ export default function SideBar({ open, handleDrawerChange }) {
 
   useEffect(() => {
     dispatch(
-      modifyUrl({ page: 1, genres, yeargte: years[0], yearlte: years[1] })
+      modifyUrl({
+        page: 1,
+        sort: `${order}.${desc ? "desc" : "asc"}`,
+        genres,
+        yeargte: years[0],
+        yearlte: years[1],
+        voteCount,
+      })
     );
-  }, [genres, years]);
+  }, [desc, order, voteCount, genres, years]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -112,17 +133,80 @@ export default function SideBar({ open, handleDrawerChange }) {
             <ChevronLeftIcon fontSize="large" />
           </IconButton>
         </DrawerHeader>
-        <Divider />
         <List
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
           component="nav"
           aria-labelledby="nested-list-subheader"
-          subheader={
-            <ListSubheader component="div" id="nested-list-subheader">
-              Filter by categories
-            </ListSubheader>
-          }
         >
+          <ListItemButton onClick={() => openCategory(3)}>
+            <ListItemText primary="Order by" />
+            {openIndex == 3 ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openIndex === 3} timeout="auto" unmountOnExit>
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              flexDirection="row"
+            >
+              <Typography variant="subtitle1">Ascending</Typography>
+              <Switch
+                size="small"
+                checked={desc}
+                onChange={() => setDesc(!desc)}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+              <Typography variant="subtitle1">Descending</Typography>
+            </Box>
+            <ToggleButtonGroup
+              value={order}
+              onChange={(e, newOrder) => setOrder(newOrder || order)}
+              aria-label="text formatting"
+              orientation="vertical"
+              fullWidth
+              exclusive
+            >
+              {orders.map((option, i) => (
+                <ToggleButton
+                  key={`order-${i}`}
+                  value={option.value}
+                  size="small"
+                  fullWidth
+                >
+                  <Typography variant="button"> {option.name}</Typography>
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+            <Box
+              fullWidth
+              sx={{
+                display: order === "vote_average" ? "block" : "none",
+                padding: 2,
+              }}
+              display="flex"
+              justifyContent="start"
+              alignItems="center"
+              flexDirection="column"
+            >
+              <Typography variant="subtitle1">Minimun Vote Count:</Typography>
+              <Slider
+                sx={{ mt: 4 }}
+                getAriaLabel={() => "Minimum distance"}
+                value={voteCount}
+                onChange={(e, newValue) => setVoteCount(newValue)}
+                valueLabelDisplay="on"
+                disableSwap
+                min={0}
+                max={10000}
+              />
+            </Box>
+          </Collapse>
+
+          <Divider />
+
+          <ListSubheader component="div" id="nested-list-subheader">
+            Filter by:
+          </ListSubheader>
           <ListItemButton onClick={() => openCategory(1)}>
             <ListItemText primary="Genre" />
             {openIndex == 1 ? <ExpandLess /> : <ExpandMore />}
