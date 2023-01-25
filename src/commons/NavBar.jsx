@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { newList, clearList } from "../store/reducers/list";
+import { newList } from "../store/reducers/list";
 import { logOut } from "../store/reducers/user";
 import { searchMovies } from "../utils/tmdb";
 import { styled, alpha } from "@mui/material/styles";

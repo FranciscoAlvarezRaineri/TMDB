@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { newList } from "../store/reducers/list";
 import { modifyUrl } from "../store/reducers/discoverUrl";
-import { allMoviesByGenre, allMoviesByYear } from "../utils/tmdb";
-import { discover } from "../utils/tmdb/index";
+import { discover } from "../utils/tmdb.js";
 
 //Components
 import NavBar from "./NavBar";
@@ -23,43 +22,29 @@ import Grid from "@mui/material/Grid";
 import Pagination from "@mui/material/Pagination";
 import LogInBox from "./LogInBox";
 import Modal from "@mui/material/Modal";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
 
 const Main = () => {
   const dispatch = useDispatch();
-  const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [resultsCount, setResultsCount] = useState(0);
   const [open, setOpen] = useState(false);
   const [openLogInBox, setOpenLogInBox] = useState(false);
-  const user = useSelector((state) => state.user);
+  const [mediaSelect, setMediaSelect] = useState("/movie");
+
   const list = useSelector((state) => state.list);
   const discoverUrl = useSelector((state) => state.discoverUrl);
 
   useEffect(() => {
-    const {
-      route,
-      media,
-      TMDB_KEY,
-      lang,
-      sort,
-      adult,
-      video,
-      page,
-      yeargte,
-      yearlte,
-      genres,
-    } = discoverUrl;
+    dispatch(modifyUrl({ page: 1, media: mediaSelect }));
+  }, [mediaSelect]);
 
-    const url = `${route}${media}?${TMDB_KEY}&language=${lang}&sort_by=${sort}&include_adult=${adult}&include_video=${video}&page=${page}${
-      yeargte ? `&release_date.gte=${yeargte}` : ""
-    }${yearlte ? `&release_date.lte=${yearlte}` : ""}${
-      genres ? `&with_genres=${genres}` : ""
-    }`;
-
-    discover(url).then((data) => {
-      setPageCount(data.total_pages);
-      setResultsCount(data.total_results);
-      dispatch(newList(data.results));
+  useEffect(() => {
+    discover(discoverUrl).then((data) => {
+      dispatch(newList(data?.results));
+      setPageCount(data?.total_pages);
+      setResultsCount(data?.total_results);
     });
   }, [discoverUrl]);
 
@@ -114,7 +99,25 @@ const Main = () => {
             </Typography>
           </Container>
         </Box>
-
+        <Box
+          id="pagination"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          flexDirection="column"
+          marginBottom={2}
+        >
+          <ToggleButtonGroup
+            color="primary"
+            value={mediaSelect}
+            exclusive
+            onChange={(e, newSelect) => setMediaSelect(newSelect)}
+            aria-label="Platform"
+          >
+            <ToggleButton value="/movie">Movies</ToggleButton>
+            <ToggleButton value="/tv">TV Shows</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
         <Box
           id="pagination"
           display="flex"
