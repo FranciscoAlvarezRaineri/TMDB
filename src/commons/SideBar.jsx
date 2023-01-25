@@ -16,6 +16,8 @@ import Collapse from "@mui/material/Collapse";
 import ListItemButton from "@mui/material/ListItemButton";
 import Button from "@mui/material/Button";
 import Slider from "@mui/material/Slider";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -85,7 +87,7 @@ export default function SideBar({ open, handleDrawerChange }) {
     dispatch(modifyUrl({ page: 1, yeargte: years[0], yearlte: years[1] }));
 
   const handleFilterSubmit = (genreId) => {
-    dispatch(modifyUrl({ page: 1, genres: genreId }));
+    dispatch(modifyUrl({ page: 1, genres: [genreId] }));
   };
 
   return (
