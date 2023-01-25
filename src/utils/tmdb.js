@@ -1,16 +1,12 @@
 import axios from "axios";
 require("dotenv").config();
 
-const TMDB_API = "https://api.themoviedb.org/3/";
+const TMDB_API = "https://api.themoviedb.org/3";
 const TMDB_KEY = `api_key=7f7b6b76f674af7ac35279fb451df8dc`;
-
-const searchMovie = `${TMDB_API}search/movie?${TMDB_KEY}`;
 
 const discover = (discoverUrl) => {
   const {
-    route,
     media,
-    TMDB_KEY,
     lang,
     sort,
     adult,
@@ -19,13 +15,14 @@ const discover = (discoverUrl) => {
     yeargte,
     yearlte,
     genres,
+    voteCount,
   } = discoverUrl;
 
-  const url = `${route}${media}?${TMDB_KEY}&language=${lang}&sort_by=${sort}&include_adult=${adult}&include_video=${video}&page=${page}${
+  const url = `${TMDB_API}/discover${media}?${TMDB_KEY}&language=${lang}&sort_by=${sort}&include_adult=${adult}&include_video=${video}&page=${page}${
     yeargte ? `&release_date.gte=${yeargte}&air_date.gte=${yeargte}` : ""
   }${yearlte ? `&release_date.lte=${yearlte}&air_date.lte=${yearlte}` : ""}${
-    genres ? `&with_genres=${genres.join("%2C")}` : ""
-  }`;
+    genres.length ? `&with_genres=${genres.join("%2C")}` : ""
+  }&vote_count.gte=${voteCount}`;
 
   console.log(url);
   return axios
@@ -36,14 +33,16 @@ const discover = (discoverUrl) => {
 
 const searchMovies = (search, page) =>
   axios
-    .get(`${searchMovie}&query=${search}&page=${page}&include_adult=false`)
+    .get(
+      `${TMDB_API}search/movie?${TMDB_KEY}&query=${search}&page=${page}&include_adult=false`
+    )
     .then((response) => response.data.results)
     .catch((err) => console.log(err));
 
-const getMovieGenres = () =>
+const getGenres = (media) =>
   axios
-    .get(`${TMDB_API}genre/movie/list?${TMDB_KEY}&language=en-US`)
+    .get(`${TMDB_API}/genre${media}/list?${TMDB_KEY}&language=en-US`)
     .then((response) => response.data.genres)
     .catch((err) => console.log(err));
 
-export { discover, searchMovies, getMovieGenres };
+export { discover, searchMovies, getGenres };
