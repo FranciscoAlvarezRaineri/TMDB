@@ -3,7 +3,7 @@ import { styled, useTheme } from "@mui/material/styles";
 import { useSelector, useDispatch } from "react-redux";
 import { modifyUrl } from "../store/reducers/discoverUrl";
 
-import { getMovieGenres } from "../utils/tmdb";
+import { getGenres } from "../utils/tmdb";
 
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -22,6 +22,7 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { Typography } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -59,6 +60,7 @@ export default function SideBar({ open, handleDrawerChange }) {
   const [openIndex, setOpenIndex] = useState(0);
   // const [genres, setGenres] = useState([]);
   const [allGenres, setAllGenres] = useState([]);
+  const [genres, setGenres] = useState([]);
   const [years, setYears] = React.useState([1873, 2023]);
   const discoverUrl = useSelector((state) => state.discoverUrl);
 
@@ -78,17 +80,17 @@ export default function SideBar({ open, handleDrawerChange }) {
   };
 
   useEffect(() => {
-    getMovieGenres().then((result) => {
+    getGenres(discoverUrl.media).then((result) => {
       setAllGenres(result);
+      setGenres([]);
     });
-  }, []);
+  }, [discoverUrl.media]);
 
-  const handleYearSubmit = () =>
-    dispatch(modifyUrl({ page: 1, yeargte: years[0], yearlte: years[1] }));
-
-  const handleFilterSubmit = (genreId) => {
-    dispatch(modifyUrl({ page: 1, genres: [genreId] }));
-  };
+  useEffect(() => {
+    dispatch(
+      modifyUrl({ page: 1, genres, yeargte: years[0], yearlte: years[1] })
+    );
+  }, [genres, years]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -126,20 +128,24 @@ export default function SideBar({ open, handleDrawerChange }) {
             {openIndex == 1 ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
           <Collapse in={openIndex === 1} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              {/* <ListItemButton sx={{ pl: 4 }}>
-                <ListItemText primary="All" />
-              </ListItemButton> */}
+            <ToggleButtonGroup
+              value={genres}
+              onChange={(e, newGenres) => setGenres(newGenres)}
+              aria-label="text formatting"
+              orientation="vertical"
+              fullWidth
+            >
               {allGenres.map((genre, i) => (
-                <ListItemButton
-                  sx={{ pl: 4 }}
+                <ToggleButton
                   key={`genre-${i}`}
-                  onClick={() => handleFilterSubmit(genre.id)}
+                  value={genre.id}
+                  size="small"
+                  fullWidth
                 >
-                  <ListItemText primary={genre.name} />
-                </ListItemButton>
+                  <Typography variant="button"> {genre.name}</Typography>
+                </ToggleButton>
               ))}
-            </List>
+            </ToggleButtonGroup>
           </Collapse>
 
           <ListItemButton onClick={() => openCategory(2)}>
@@ -159,19 +165,6 @@ export default function SideBar({ open, handleDrawerChange }) {
                   min={1873}
                   max={2023}
                 />
-              </Box>
-              <Box
-                display="flex"
-                justifyContent="flex-end"
-                alignItems="flex-end"
-                m={1}
-              >
-                <Button
-                  variant="outlined"
-                  onClick={() => handleYearSubmit(years)}
-                >
-                  Submit
-                </Button>
               </Box>
             </List>
           </Collapse>

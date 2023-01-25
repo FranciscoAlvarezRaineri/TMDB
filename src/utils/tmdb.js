@@ -40,10 +40,10 @@ const searchMovies = (search, page) =>
     .then((response) => response.data.results)
     .catch((err) => console.log(err));
 
-const getMovieGenres = () =>
+const getGenres = (media) =>
   axios
-    .get(`${TMDB_API}genre/movie/list?${TMDB_KEY}&language=en-US`)
+    .get(`${TMDB_API}genre${media}/list?${TMDB_KEY}&language=en-US`)
     .then((response) => response.data.genres)
     .catch((err) => console.log(err));
 
-export { discover, searchMovies, getMovieGenres };
+export { discover, searchMovies, getGenres };

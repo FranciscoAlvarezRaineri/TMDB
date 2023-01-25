@@ -37,7 +37,7 @@ const Main = () => {
   const discoverUrl = useSelector((state) => state.discoverUrl);
 
   useEffect(() => {
-    dispatch(modifyUrl({ page: 1, media: mediaSelect }));
+    dispatch(modifyUrl({ media: mediaSelect, page: 1 }));
   }, [mediaSelect]);
 
   useEffect(() => {
