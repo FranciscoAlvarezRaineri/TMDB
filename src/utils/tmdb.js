@@ -32,7 +32,7 @@ const discover = (discoverUrl) => {
 const searchMovies = (search, page) =>
   axios
     .get(
-      `${TMDB_API}search/movie?${TMDB_KEY}&query=${search}&page=${page}&include_adult=false`
+      `${TMDB_API}/search/movie?${TMDB_KEY}&query=${search}&page=${page}&include_adult=false`
     )
     .then((response) => response.data.results)
     .catch((err) => console.log(err));

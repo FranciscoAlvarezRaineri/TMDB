@@ -181,35 +181,37 @@ export default function SideBar({ open, handleDrawerChange }) {
               ))}
             </ToggleButtonGroup>
           </Collapse>
-          <Box
-            id="vote_count"
-            fullWidth
-            sx={{
-              display: order === "vote_average" ? "block" : "none",
-              padding: 2,
-            }}
-            display="flex"
-            justifyContent="start"
-            alignItems="center"
-            flexDirection="column"
-          >
-            <Typography variant="subtitle1">Min Vote Count:</Typography>
-            <Slider
-              sx={{ mt: 4 }}
-              getAriaLabel={() => "Minimum distance"}
-              value={voteCount}
-              onChange={(e, newValue) => setVoteCount(newValue)}
-              valueLabelDisplay="on"
-              disableSwap
-              min={0}
-              max={10000}
-            />
-          </Box>
 
           <Divider />
           <ListSubheader component="div" id="nested-list-subheader">
             Filter:
           </ListSubheader>
+          <ListItemButton onClick={() => openCategory(4)}>
+            <ListItemText primary="Min Vote Count" />
+            {openIndex == 4 ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openIndex === 4} timeout="auto" unmountOnExit>
+            <Box
+              id="vote_count"
+              fullWidth
+              sx={{
+                padding: 2,
+              }}
+              display="flex"
+              justifyContent="start"
+              alignItems="center"
+              flexDirection="column"
+            >
+              <Slider
+                value={voteCount}
+                onChange={(e, newValue) => setVoteCount(newValue)}
+                valueLabelDisplay="on"
+                disableSwap
+                min={0}
+                max={10000}
+              />
+            </Box>
+          </Collapse>
           <ListItemButton onClick={() => openCategory(1)}>
             <ListItemText primary="Genre" />
             {openIndex == 1 ? <ExpandLess /> : <ExpandMore />}
