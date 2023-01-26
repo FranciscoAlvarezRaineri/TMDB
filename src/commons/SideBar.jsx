@@ -180,31 +180,31 @@ export default function SideBar({ open, handleDrawerChange }) {
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
-            <Box
-              id="vote_count"
-              fullWidth
-              sx={{
-                display: order === "vote_average" ? "block" : "none",
-                padding: 2,
-              }}
-              display="flex"
-              justifyContent="start"
-              alignItems="center"
-              flexDirection="column"
-            >
-              <Typography variant="subtitle1">Minimun Vote Count:</Typography>
-              <Slider
-                sx={{ mt: 4 }}
-                getAriaLabel={() => "Minimum distance"}
-                value={voteCount}
-                onChange={(e, newValue) => setVoteCount(newValue)}
-                valueLabelDisplay="on"
-                disableSwap
-                min={0}
-                max={10000}
-              />
-            </Box>
           </Collapse>
+          <Box
+            id="vote_count"
+            fullWidth
+            sx={{
+              display: order === "vote_average" ? "block" : "none",
+              padding: 2,
+            }}
+            display="flex"
+            justifyContent="start"
+            alignItems="center"
+            flexDirection="column"
+          >
+            <Typography variant="subtitle1">Min Vote Count:</Typography>
+            <Slider
+              sx={{ mt: 4 }}
+              getAriaLabel={() => "Minimum distance"}
+              value={voteCount}
+              onChange={(e, newValue) => setVoteCount(newValue)}
+              valueLabelDisplay="on"
+              disableSwap
+              min={0}
+              max={10000}
+            />
+          </Box>
 
           <Divider />
           <ListSubheader component="div" id="nested-list-subheader">
