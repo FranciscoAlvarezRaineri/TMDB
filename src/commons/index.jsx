@@ -24,6 +24,7 @@ import LogInBox from "./LogInBox";
 import Modal from "@mui/material/Modal";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
+import Paginate from "./Paginate";
 
 const Main = () => {
   const dispatch = useDispatch();
@@ -44,7 +45,7 @@ const Main = () => {
     discover(discoverUrl).then((data) => {
       dispatch(newList(data?.results));
       setPageCount(data?.total_pages);
-      setResultsCount(data?.total_results);
+      setResultsCount(data?.total_results || 0);
     });
   }, [discoverUrl]);
 
@@ -119,6 +120,9 @@ const Main = () => {
               <ToggleButton value="/tv">TV Shows</ToggleButton>
             </ToggleButtonGroup>
           </Box>
+
+          <Paginate pageCount={pageCount} resultsCount={resultsCount} />
+          {/* 
           <Box
             id="pagination"
             display="flex"
@@ -137,8 +141,12 @@ const Main = () => {
             />
             <Typography variant="h6" textAlign="center">{`Showing results: ${
               discoverUrl.page * 20 - 19
-            } to ${discoverUrl.page * 20} of ${resultsCount}`}</Typography>
-          </Box>
+            } to ${
+              discoverUrl.page * 20 < resultsCount
+                ? discoverUrl.page * 20
+                : resultsCount
+            } of ${resultsCount}`}</Typography>
+          </Box> */}
 
           <Container sx={{ py: 8 }} maxWidth="lg">
             <Grid container spacing={4}>
@@ -166,8 +174,8 @@ const Main = () => {
                       <Typography>{movie.overview}</Typography>
                     </CardContent>
                     <CardActions>
-                      <Button size="small">View</Button>
-                      <Button size="small">Edit</Button>
+                      <Button size="small">Watched</Button>
+                      <Button size="small">Add to wish list</Button>
                     </CardActions>
                   </Card>
                 </Grid>
@@ -175,26 +183,7 @@ const Main = () => {
             </Grid>
           </Container>
 
-          <Box
-            id="pagination"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            flexDirection="column"
-          >
-            <Typography variant="h6" textAlign="center">{`Showing results: ${
-              discoverUrl.page * 20 - 19
-            } to ${discoverUrl.page * 20} of ${resultsCount}`}</Typography>
-            <Pagination
-              count={pageCount > 500 ? 500 : pageCount}
-              page={discoverUrl.page}
-              onChange={(event, value) => {
-                dispatch(modifyUrl({ page: value }));
-              }}
-              siblingCount={0}
-              boundaryCount={1}
-            />
-          </Box>
+          <Paginate pageCount={pageCount} resultsCount={resultsCount} />
         </Box>
       </main>
       <Footer />

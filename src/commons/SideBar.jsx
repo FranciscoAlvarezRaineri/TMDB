@@ -71,6 +71,8 @@ export default function SideBar({ open, handleDrawerChange }) {
 
   const [voteCount, setVoteCount] = useState(0);
 
+  const [adult, setAdult] = useState(false);
+
   const [allGenres, setAllGenres] = useState([]);
   const [genres, setGenres] = useState([]);
 
@@ -109,9 +111,10 @@ export default function SideBar({ open, handleDrawerChange }) {
         yeargte: years[0],
         yearlte: years[1],
         voteCount,
+        adult,
       })
     );
-  }, [desc, order, voteCount, genres, years]);
+  }, [desc, order, voteCount, genres, years, adult]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -138,26 +141,26 @@ export default function SideBar({ open, handleDrawerChange }) {
           component="nav"
           aria-labelledby="nested-list-subheader"
         >
+          <Divider />
+          <ListSubheader component="div" id="nested-list-subheader">
+            Order:
+          </ListSubheader>
+          <ListItemButton onClick={() => setDesc(!desc)}>
+            <ListItemText primary="Ascending" />
+            <Switch
+              size="small"
+              checked={desc}
+              onChange={() => setDesc(!desc)}
+              inputProps={{ "aria-label": "controlled" }}
+            />
+            <ListItemText primary="Descending" />
+          </ListItemButton>
+
           <ListItemButton onClick={() => openCategory(3)}>
             <ListItemText primary="Order by" />
             {openIndex == 3 ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
           <Collapse in={openIndex === 3} timeout="auto" unmountOnExit>
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              flexDirection="row"
-            >
-              <Typography variant="subtitle1">Ascending</Typography>
-              <Switch
-                size="small"
-                checked={desc}
-                onChange={() => setDesc(!desc)}
-                inputProps={{ "aria-label": "controlled" }}
-              />
-              <Typography variant="subtitle1">Descending</Typography>
-            </Box>
             <ToggleButtonGroup
               value={order}
               onChange={(e, newOrder) => setOrder(newOrder || order)}
@@ -178,6 +181,7 @@ export default function SideBar({ open, handleDrawerChange }) {
               ))}
             </ToggleButtonGroup>
             <Box
+              id="vote_count"
               fullWidth
               sx={{
                 display: order === "vote_average" ? "block" : "none",
@@ -203,9 +207,8 @@ export default function SideBar({ open, handleDrawerChange }) {
           </Collapse>
 
           <Divider />
-
           <ListSubheader component="div" id="nested-list-subheader">
-            Filter by:
+            Filter:
           </ListSubheader>
           <ListItemButton onClick={() => openCategory(1)}>
             <ListItemText primary="Genre" />
@@ -219,7 +222,7 @@ export default function SideBar({ open, handleDrawerChange }) {
               orientation="vertical"
               fullWidth
             >
-              {allGenres.map((genre, i) => (
+              {allGenres?.map((genre, i) => (
                 <ToggleButton
                   key={`genre-${i}`}
                   value={genre.id}
@@ -252,6 +255,20 @@ export default function SideBar({ open, handleDrawerChange }) {
               </Box>
             </List>
           </Collapse>
+
+          <Divider />
+          <ListSubheader component="div" id="nested-list-subheader">
+            Include:
+          </ListSubheader>
+          <ListItemButton id="include_adult" onClick={() => setAdult(!adult)}>
+            <ListItemText primary="Adult" />
+            <Switch
+              size="small"
+              checked={adult}
+              onChange={() => setAdult(!adult)}
+              inputProps={{ "aria-label": "controlled" }}
+            />
+          </ListItemButton>
         </List>
       </Drawer>
       <Main open={open}>
