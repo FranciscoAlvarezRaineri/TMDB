@@ -8,8 +8,8 @@ const initialState = {
   adult: "false",
   video: "false",
   page: 1,
-  yeargte: "1800",
-  yearlte: "2024",
+  yeargte: 1800,
+  yearlte: 2024,
   genres: [],
   voteCount: 0,
 };

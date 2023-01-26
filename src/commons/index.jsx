@@ -19,11 +19,15 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Grid from "@mui/material/Grid";
-import Pagination from "@mui/material/Pagination";
 import LogInBox from "./LogInBox";
 import Modal from "@mui/material/Modal";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
+import Paginate from "./Paginate";
+import Collapse from "@mui/material/Collapse";
+
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 
 const Main = () => {
   const dispatch = useDispatch();
@@ -32,6 +36,7 @@ const Main = () => {
   const [open, setOpen] = useState(false);
   const [openLogInBox, setOpenLogInBox] = useState(false);
   const [mediaSelect, setMediaSelect] = useState("/movie");
+  const [expandCard, setExpandCard] = useState(null);
 
   const list = useSelector((state) => state.list);
   const discoverUrl = useSelector((state) => state.discoverUrl);
@@ -44,7 +49,7 @@ const Main = () => {
     discover(discoverUrl).then((data) => {
       dispatch(newList(data?.results));
       setPageCount(data?.total_pages);
-      setResultsCount(data?.total_results);
+      setResultsCount(data?.total_results || 0);
     });
   }, [discoverUrl]);
 
@@ -119,30 +124,12 @@ const Main = () => {
               <ToggleButton value="/tv">TV Shows</ToggleButton>
             </ToggleButtonGroup>
           </Box>
-          <Box
-            id="pagination"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            flexDirection="column"
-          >
-            <Pagination
-              count={pageCount > 500 ? 500 : pageCount}
-              page={discoverUrl.page}
-              onChange={(event, value) => {
-                dispatch(modifyUrl({ page: value }));
-              }}
-              siblingCount={0}
-              boundaryCount={1}
-            />
-            <Typography variant="h6" textAlign="center">{`Showing results: ${
-              discoverUrl.page * 20 - 19
-            } to ${discoverUrl.page * 20} of ${resultsCount}`}</Typography>
-          </Box>
+
+          <Paginate pageCount={pageCount} resultsCount={resultsCount} />
 
           <Container sx={{ py: 8 }} maxWidth="lg">
             <Grid container spacing={4}>
-              {list.map((movie) => (
+              {list.map((movie, i) => (
                 <Grid item key={movie.id} xs={12} sm={6} md={3}>
                   <Card
                     sx={{
@@ -151,23 +138,44 @@ const Main = () => {
                       flexDirection: "column",
                     }}
                   >
-                    {" "}
-                    {movie.poster_path ? (
-                      <CardMedia
-                        component="img"
-                        image={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
-                        alt="movie poster"
-                      />
-                    ) : null}
-                    <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        {movie.title}
-                      </Typography>
-                      <Typography>{movie.overview}</Typography>
-                    </CardContent>
+                    <Typography
+                      gutterBottom
+                      variant="h5"
+                      align="center"
+                      height="52px"
+                    >
+                      {movie.title}
+                    </Typography>
+                    <Box>
+                      {movie.poster_path ? (
+                        <CardMedia
+                          component="img"
+                          image={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
+                          alt="movie poster"
+                        />
+                      ) : null}
+                      <Collapse
+                        in={expandCard === i}
+                        timeout="auto"
+                        unmountOnExit
+                      >
+                        <CardContent sx={{ flexGrow: 1 }}>
+                          <Typography>{movie.overview}</Typography>
+                        </CardContent>
+                      </Collapse>
+                    </Box>
                     <CardActions>
-                      <Button size="small">View</Button>
-                      <Button size="small">Edit</Button>
+                      <Button size="small">Watched</Button>
+                      <Button size="small">Wanna watch</Button>
+                      <Button
+                        onClick={() => {
+                          expandCard === i
+                            ? setExpandCard(null)
+                            : setExpandCard(i);
+                        }}
+                      >
+                        {expandCard === i ? <ExpandLess /> : <ExpandMore />}
+                      </Button>
                     </CardActions>
                   </Card>
                 </Grid>
@@ -175,26 +183,7 @@ const Main = () => {
             </Grid>
           </Container>
 
-          <Box
-            id="pagination"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            flexDirection="column"
-          >
-            <Typography variant="h6" textAlign="center">{`Showing results: ${
-              discoverUrl.page * 20 - 19
-            } to ${discoverUrl.page * 20} of ${resultsCount}`}</Typography>
-            <Pagination
-              count={pageCount > 500 ? 500 : pageCount}
-              page={discoverUrl.page}
-              onChange={(event, value) => {
-                dispatch(modifyUrl({ page: value }));
-              }}
-              siblingCount={0}
-              boundaryCount={1}
-            />
-          </Box>
+          <Paginate pageCount={pageCount} resultsCount={resultsCount} />
         </Box>
       </main>
       <Footer />

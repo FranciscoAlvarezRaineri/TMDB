@@ -18,9 +18,7 @@ const discover = (discoverUrl) => {
     voteCount,
   } = discoverUrl;
 
-  const url = `${TMDB_API}/discover${media}?${TMDB_KEY}&language=${lang}&sort_by=${sort}&include_adult=${adult}&include_video=${video}&page=${page}${
-    yeargte ? `&release_date.gte=${yeargte}&air_date.gte=${yeargte}` : ""
-  }${yearlte ? `&release_date.lte=${yearlte}&air_date.lte=${yearlte}` : ""}${
+  const url = `${TMDB_API}/discover${media}?${TMDB_KEY}&language=${lang}&sort_by=${sort}&include_adult=${adult}&include_video=${video}&page=${page}&release_date.gte=${yeargte}&air_date.gte=${yeargte}&release_date.lte=${yearlte}&air_date.lte=${yearlte}${
     genres.length ? `&with_genres=${genres.join("%2C")}` : ""
   }&vote_count.gte=${voteCount}`;
 
@@ -34,7 +32,7 @@ const discover = (discoverUrl) => {
 const searchMovies = (search, page) =>
   axios
     .get(
-      `${TMDB_API}search/movie?${TMDB_KEY}&query=${search}&page=${page}&include_adult=false`
+      `${TMDB_API}/search/movie?${TMDB_KEY}&query=${search}&page=${page}&include_adult=false`
     )
     .then((response) => response.data.results)
     .catch((err) => console.log(err));
