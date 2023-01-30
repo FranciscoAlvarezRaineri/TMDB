@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const TMDB_API = "https://api.themoviedb.org/3";
-const TMDB_KEY = `api_key=7f7b6b76f674af7ac35279fb451df8dc`;
+const TMDB_KEY = `7f7b6b76f674af7ac35279fb451df8dc`;
 
 const discover = (discoverUrl) => {
   const {
@@ -17,7 +17,7 @@ const discover = (discoverUrl) => {
     voteCount,
   } = discoverUrl;
 
-  const url = `${TMDB_API}/discover${media}?${TMDB_KEY}&language=${lang}&sort_by=${sort}&include_adult=${adult}&include_video=${video}&page=${page}&release_date.gte=${yeargte}&air_date.gte=${yeargte}&release_date.lte=${yearlte}&air_date.lte=${yearlte}${
+  const url = `${TMDB_API}/discover${media}?api_key=${TMDB_KEY}&language=${lang}&sort_by=${sort}&include_adult=${adult}&include_video=${video}&page=${page}&release_date.gte=${yeargte}&air_date.gte=${yeargte}&release_date.lte=${yearlte}&air_date.lte=${yearlte}${
     genres.length ? `&with_genres=${genres.join("%2C")}` : ""
   }&vote_count.gte=${voteCount}`;
 
