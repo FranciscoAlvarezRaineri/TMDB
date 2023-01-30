@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { newList } from "../store/reducers/list";
 import { modifyUrl } from "../store/reducers/discoverUrl";
+import { logIn } from "../store/reducers/user";
 import { discover } from "../utils/tmdb.js";
+import { auth, onAuthStateChanged, signIn } from "../utils/firebase";
 
 //Components
 import NavBar from "./NavBar";
@@ -59,6 +61,11 @@ const Main = () => {
       cleanUp = true;
     };
   }, [discoverUrl]);
+
+  onAuthStateChanged(auth, (currentUser) => {
+    dispatch(logIn({ email: currentUser.email }));
+    console.log(currentUser);
+  });
 
   return (
     <>
