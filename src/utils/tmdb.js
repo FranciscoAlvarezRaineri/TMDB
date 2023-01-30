@@ -1,5 +1,4 @@
 import axios from "axios";
-require("dotenv").config();
 
 const TMDB_API = "https://api.themoviedb.org/3";
 const TMDB_KEY = `api_key=7f7b6b76f674af7ac35279fb451df8dc`;
@@ -23,6 +22,7 @@ const discover = (discoverUrl) => {
   }&vote_count.gte=${voteCount}`;
 
   console.log(url);
+
   return axios
     .get(url)
     .then((response) => response.data)

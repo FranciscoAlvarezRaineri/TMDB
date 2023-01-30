@@ -46,11 +46,18 @@ const Main = () => {
   }, [mediaSelect]);
 
   useEffect(() => {
+    let cleanUp = false;
+
     discover(discoverUrl).then((data) => {
-      dispatch(newList(data?.results));
-      setPageCount(data?.total_pages);
-      setResultsCount(data?.total_results || 0);
+      if (!cleanUp) {
+        dispatch(newList(data?.results));
+        setPageCount(data?.total_pages);
+        setResultsCount(data?.total_results || 0);
+      }
     });
+    return () => {
+      cleanUp = true;
+    };
   }, [discoverUrl]);
 
   return (
@@ -78,7 +85,7 @@ const Main = () => {
       </Modal>
       <main>
         <Box ml={open ? 30 : 0} className="animation">
-          <Box
+          {/*           <Box
             sx={{
               bgcolor: "background.paper",
               pb: 6,
@@ -104,7 +111,7 @@ const Main = () => {
                 find out more about the classics.
               </Typography>
             </Container>
-          </Box>
+          </Box> */}
           <Box
             id="pagination"
             display="flex"
@@ -129,8 +136,8 @@ const Main = () => {
 
           <Container sx={{ py: 8 }} maxWidth="lg">
             <Grid container spacing={4}>
-              {list.map((movie, i) => (
-                <Grid item key={movie.id} xs={12} sm={6} md={3}>
+              {list.map((media, i) => (
+                <Grid item key={media.id} xs={12} sm={6} md={3}>
                   <Card
                     sx={{
                       height: "100%",
@@ -138,20 +145,12 @@ const Main = () => {
                       flexDirection: "column",
                     }}
                   >
-                    <Typography
-                      gutterBottom
-                      variant="h5"
-                      align="center"
-                      height="52px"
-                    >
-                      {movie.title}
-                    </Typography>
                     <Box>
-                      {movie.poster_path ? (
+                      {media.poster_path ? (
                         <CardMedia
                           component="img"
-                          image={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
-                          alt="movie poster"
+                          image={`https://image.tmdb.org/t/p/w500/${media.poster_path}`}
+                          alt="media poster"
                         />
                       ) : null}
                       <Collapse
@@ -160,7 +159,10 @@ const Main = () => {
                         unmountOnExit
                       >
                         <CardContent sx={{ flexGrow: 1 }}>
-                          <Typography>{movie.overview}</Typography>
+                          <Typography gutterBottom variant="h6" align="left">
+                            {media.title || media.name}
+                          </Typography>
+                          <Typography>{media.overview}</Typography>
                         </CardContent>
                       </Collapse>
                     </Box>

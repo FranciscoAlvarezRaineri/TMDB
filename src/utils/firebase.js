@@ -4,7 +4,9 @@ import { initializeApp } from "firebase/app";
 import {
   getAuth,
   createUserWithEmailAndPassword,
+  setPersistence,
   signInWithEmailAndPassword,
+  browserSessionPersistence,
 } from "firebase/auth";
 import {
   getFirestore,
@@ -13,6 +15,7 @@ import {
   setDoc,
   getDoc,
 } from "firebase/firestore";
+
 import { User, userConverter } from "./User";
 
 // Configurar de Firebase
@@ -30,6 +33,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig); // Inicializa la "app" Firebase.
 const auth = getAuth(app); // Inicializa los servicios de auth.
+// firebase.auth().useDeviceLanguage(); // Acivate to set language
+
 const db = getFirestore(app); // Inicializa los servicios de la base de datos Firestore.
 
 const users = collection(db, "users"); // Inicializa la colección en la base de datos para los usuarios.
@@ -66,6 +71,8 @@ const createUser = (email, password, name, lastname) =>
   );
 
 // Función para hacer un signIn con email y password y devolver el objeto usuario en la base de datos.
+const getCurrentUser = () => auth.currentUser;
+
 const signIn = (email, password) =>
   signInWithEmailAndPassword(auth, email, password)
     .then((response) =>
@@ -75,4 +82,4 @@ const signIn = (email, password) =>
     )
     .catch((err) => console.log(err));
 
-export { createUser, signIn };
+export { createUser, signIn, getCurrentUser };
