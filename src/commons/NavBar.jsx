@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { newList } from "../store/reducers/list";
 import { logIn, logOut } from "../store/reducers/user";
 import { searchMovies } from "../utils/tmdb";
-import { styled, alpha } from "@mui/material/styles";
 
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -22,7 +21,6 @@ import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { getCurrentUser } from "../utils/firebase";
 
 export default function NavBar({ open, handleDrawerChange, handleLogInBox }) {
   const user = useSelector((state) => state.user);
@@ -34,12 +32,6 @@ export default function NavBar({ open, handleDrawerChange, handleLogInBox }) {
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  useEffect(() => {
-    const newUser = getCurrentUser();
-    console.log(newUser);
-    dispatch(logIn({ ...newUser }));
-  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -181,7 +173,7 @@ export default function NavBar({ open, handleDrawerChange, handleLogInBox }) {
               <SearchIcon />
             </Button>
           </form>
-          {user.email ? (
+          {user?.email ? (
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
               {/* <IconButton
               size="large"

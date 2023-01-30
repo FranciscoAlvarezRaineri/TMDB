@@ -1,12 +1,10 @@
 // Importar las funciones de firebase y los modelos
-
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  setPersistence,
   signInWithEmailAndPassword,
-  browserSessionPersistence,
+  onAuthStateChanged,
 } from "firebase/auth";
 import {
   getFirestore,
@@ -71,8 +69,6 @@ const createUser = (email, password, name, lastname) =>
   );
 
 // Función para hacer un signIn con email y password y devolver el objeto usuario en la base de datos.
-const getCurrentUser = () => auth.currentUser;
-
 const signIn = (email, password) =>
   signInWithEmailAndPassword(auth, email, password)
     .then((response) =>
@@ -82,4 +78,4 @@ const signIn = (email, password) =>
     )
     .catch((err) => console.log(err));
 
-export { createUser, signIn, getCurrentUser };
+export { createUser, signIn, auth, onAuthStateChanged };
