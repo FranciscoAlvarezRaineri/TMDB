@@ -27,6 +27,7 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import Paginate from "./Paginate";
 import Collapse from "@mui/material/Collapse";
+import Rating from "@mui/material/Rating";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -42,6 +43,7 @@ const Main = () => {
 
   const list = useSelector((state) => state.list);
   const discoverUrl = useSelector((state) => state.discoverUrl);
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(modifyUrl({ media: mediaSelect, page: 1 }));
@@ -62,10 +64,11 @@ const Main = () => {
     };
   }, [discoverUrl]);
 
-  onAuthStateChanged(auth, (currentUser) => {
-    dispatch(logIn({ email: currentUser.email }));
-    console.log(currentUser);
-  });
+  useEffect(() => {
+    onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) dispatch(logIn({ email: currentUser.email }));
+    });
+  }, []);
 
   return (
     <>
@@ -150,9 +153,28 @@ const Main = () => {
                       height: "100%",
                       display: "flex",
                       flexDirection: "column",
+                      justifyContent: "center",
+                      justifyItems: "center",
                     }}
                   >
-                    <Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Rating
+                        sx={{
+                          position: "relative",
+                          top: "32px",
+                        }}
+                        name="read-only"
+                        value={parseInt(media.vote_average) / 2}
+                        precision={0.5}
+                        readOnly
+                        size="large"
+                      />
                       {media.poster_path ? (
                         <CardMedia
                           component="img"
@@ -176,6 +198,7 @@ const Main = () => {
                     <CardActions>
                       <Button size="small">Watched</Button>
                       <Button size="small">Wanna watch</Button>
+                      {console.log(media.vote_average)}
                       <Button
                         onClick={() => {
                           expandCard === i

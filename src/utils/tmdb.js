@@ -43,4 +43,6 @@ const getGenres = (media) =>
     .then((response) => response.data.genres)
     .catch((err) => console.log(err));
 
+const rateMedia = (media, rating) => {};
+
 export { discover, searchMovies, getGenres };
