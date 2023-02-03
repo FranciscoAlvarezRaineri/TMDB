@@ -1,10 +1,11 @@
 // Importar las funciones de firebase y los modelos
-
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
 } from "firebase/auth";
 import {
   getFirestore,
@@ -13,12 +14,12 @@ import {
   setDoc,
   getDoc,
 } from "firebase/firestore";
+
 import { User, userConverter } from "./User";
 
 // Configurar de Firebase
-
 const firebaseConfig = {
-  apiKey: "AIzaSyDabb-d0VsJKZZM2OTepxFDIwdVm_7Ufl8",
+  apiKey: process.env.REACT_APP_apiKey,
   authDomain: "tmdb-ecf2d.firebaseapp.com",
   projectId: "tmdb-ecf2d",
   storageBucket: "tmdb-ecf2d.appspot.com",
@@ -30,6 +31,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig); // Inicializa la "app" Firebase.
 const auth = getAuth(app); // Inicializa los servicios de auth.
+// firebase.auth().useDeviceLanguage(); // Acivate to set language
+
 const db = getFirestore(app); // Inicializa los servicios de la base de datos Firestore.
 
 const users = collection(db, "users"); // Inicializa la colección en la base de datos para los usuarios.
@@ -75,4 +78,4 @@ const signIn = (email, password) =>
     )
     .catch((err) => console.log(err));
 
-export { createUser, signIn };
+export { createUser, signIn, auth, onAuthStateChanged, signOut };

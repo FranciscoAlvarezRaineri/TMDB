@@ -25,7 +25,7 @@ const Paginate = ({ pageCount, resultsCount }) => {
         onChange={(e, value) => {
           dispatch(modifyUrl({ page: value }));
         }}
-        siblingCount={0}
+        siblingCount={1}
         boundaryCount={1}
       />
       <Typography variant="h6" textAlign="center">{`Showing results: ${

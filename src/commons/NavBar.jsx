@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { newList } from "../store/reducers/list";
 import { logOut } from "../store/reducers/user";
 import { searchMovies } from "../utils/tmdb";
-import { styled, alpha } from "@mui/material/styles";
+import { auth, signOut } from "../utils/firebase";
 
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -37,7 +37,6 @@ export default function NavBar({ open, handleDrawerChange, handleLogInBox }) {
   const handleSearch = (e) => {
     e.preventDefault();
     searchMovies(search).then((result) => {
-      console.log(result);
       dispatch(newList(result));
     });
   };
@@ -59,15 +58,25 @@ export default function NavBar({ open, handleDrawerChange, handleLogInBox }) {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const menuId = "primary-search-account-menu";
-  const renderMenu = (
+  const handleLogOut = () => {
+    signOut(auth)
+      .then(() => {
+        dispatch(logOut);
+      })
+      .catch((err) => {
+        console.log("SignOut error:", err);
+      });
+    handleMenuClose();
+  };
+
+  const userMenu = (
     <Menu
       anchorEl={anchorEl}
       anchorOrigin={{
         vertical: "top",
         horizontal: "right",
       }}
-      id={menuId}
+      id="primary-search-account-menu"
       keepMounted
       transformOrigin={{
         vertical: "top",
@@ -78,18 +87,18 @@ export default function NavBar({ open, handleDrawerChange, handleLogInBox }) {
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleLogOut}>LogOut</MenuItem>
     </Menu>
   );
 
-  const mobileMenuId = "primary-search-account-menu-mobile";
-  const renderMobileMenu = (
+  const mobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
       anchorOrigin={{
         vertical: "top",
         horizontal: "right",
       }}
-      id={mobileMenuId}
+      id="primary-search-account-menu-mobile"
       keepMounted
       transformOrigin={{
         vertical: "top",
@@ -174,7 +183,7 @@ export default function NavBar({ open, handleDrawerChange, handleLogInBox }) {
               <SearchIcon />
             </Button>
           </form>
-          {user.email ? (
+          {user?.email ? (
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
               {/* <IconButton
               size="large"
@@ -198,7 +207,7 @@ export default function NavBar({ open, handleDrawerChange, handleLogInBox }) {
                 size="large"
                 edge="end"
                 aria-label="account of current user"
-                aria-controls={menuId}
+                aria-controls="primary-search-account-menu"
                 aria-haspopup="true"
                 onClick={handleProfileMenuOpen}
                 color="inherit"
@@ -220,7 +229,7 @@ export default function NavBar({ open, handleDrawerChange, handleLogInBox }) {
             <IconButton
               size="large"
               aria-label="show more"
-              aria-controls={mobileMenuId}
+              aria-controls="primary-search-account-menu-mobile"
               aria-haspopup="true"
               onClick={handleMobileMenuOpen}
               color="inherit"
@@ -230,8 +239,8 @@ export default function NavBar({ open, handleDrawerChange, handleLogInBox }) {
           </Box>
         </Toolbar>
       </AppBar>
-      {renderMobileMenu}
-      {renderMenu}
+      {mobileMenu}
+      {userMenu}
     </Box>
   );
 }

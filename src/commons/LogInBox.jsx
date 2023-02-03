@@ -22,7 +22,7 @@ const LogInBox = ({ handleLogInBox }) => {
     e.preventDefault();
     signIn(email, password)
       .then((user) => {
-        dispatch(logIn({ ...user }));
+        /*dispatch(logIn({ ...user }));*/
         setEmail("");
         setPassword("");
         handleLogInBox();
