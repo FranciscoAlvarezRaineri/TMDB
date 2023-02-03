@@ -37,7 +37,6 @@ export default function NavBar({ open, handleDrawerChange, handleLogInBox }) {
   const handleSearch = (e) => {
     e.preventDefault();
     searchMovies(search).then((result) => {
-      console.log(result);
       dispatch(newList(result));
     });
   };

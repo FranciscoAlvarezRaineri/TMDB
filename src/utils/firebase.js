@@ -18,9 +18,8 @@ import {
 import { User, userConverter } from "./User";
 
 // Configurar de Firebase
-
 const firebaseConfig = {
-  apiKey: "AIzaSyDabb-d0VsJKZZM2OTepxFDIwdVm_7Ufl8",
+  apiKey: process.env.REACT_APP_apiKey,
   authDomain: "tmdb-ecf2d.firebaseapp.com",
   projectId: "tmdb-ecf2d",
   storageBucket: "tmdb-ecf2d.appspot.com",
