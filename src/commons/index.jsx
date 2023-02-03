@@ -27,6 +27,7 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import Paginate from "./Paginate";
 import Collapse from "@mui/material/Collapse";
+import Rating from "@mui/material/Rating";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -42,6 +43,7 @@ const Main = () => {
 
   const list = useSelector((state) => state.list);
   const discoverUrl = useSelector((state) => state.discoverUrl);
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(modifyUrl({ media: mediaSelect, page: 1 }));
@@ -62,10 +64,11 @@ const Main = () => {
     };
   }, [discoverUrl]);
 
-  onAuthStateChanged(auth, (currentUser) => {
-    dispatch(logIn({ email: currentUser.email }));
-    console.log(currentUser);
-  });
+  useEffect(() => {
+    onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) dispatch(logIn({ email: currentUser.email }));
+    });
+  }, []);
 
   return (
     <>
@@ -141,7 +144,7 @@ const Main = () => {
 
           <Paginate pageCount={pageCount} resultsCount={resultsCount} />
 
-          <Container sx={{ py: 8 }} maxWidth="lg">
+          <Container sx={{ py: 2 }} maxWidth="lg">
             <Grid container spacing={4}>
               {list.map((media, i) => (
                 <Grid item key={media.id} xs={12} sm={6} md={3}>
@@ -152,14 +155,52 @@ const Main = () => {
                       flexDirection: "column",
                     }}
                   >
-                    <Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        marginTop: "-25px",
+                      }}
+                    >
+                      <Rating
+                        sx={{
+                          position: "relative",
+                          top: "32px",
+                        }}
+                        name="read-only"
+                        value={parseInt(media.vote_average) / 2}
+                        precision={0.5}
+                        readOnly
+                        size="large"
+                      />
                       {media.poster_path ? (
                         <CardMedia
+                          sx={{ flexBasis: "fill" }}
                           component="img"
                           image={`https://image.tmdb.org/t/p/w500/${media.poster_path}`}
                           alt="media poster"
                         />
                       ) : null}
+                      <Button
+                        sx={{
+                          position: "relative",
+                          top: "-35px",
+                          marginBottom: "-35px",
+                          borderRadius: "25%",
+                          width: 36,
+                          height: 36,
+                        }}
+                        shape="square"
+                        variant="outlined"
+                        onClick={() => {
+                          expandCard === i
+                            ? setExpandCard(null)
+                            : setExpandCard(i);
+                        }}
+                      >
+                        {expandCard === i ? <ExpandLess /> : <ExpandMore />}
+                      </Button>
                       <Collapse
                         in={expandCard === i}
                         timeout="auto"
@@ -176,15 +217,6 @@ const Main = () => {
                     <CardActions>
                       <Button size="small">Watched</Button>
                       <Button size="small">Wanna watch</Button>
-                      <Button
-                        onClick={() => {
-                          expandCard === i
-                            ? setExpandCard(null)
-                            : setExpandCard(i);
-                        }}
-                      >
-                        {expandCard === i ? <ExpandLess /> : <ExpandMore />}
-                      </Button>
                     </CardActions>
                   </Card>
                 </Grid>

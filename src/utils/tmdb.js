@@ -43,4 +43,6 @@ const getGenres = (media) =>
     .then((response) => response.data.genres)
     .catch((err) => console.log(err));
 
-export { discover, searchMovies, getGenres };
+const addToWatchlist = (mediaId, userId) => {};
+
+export { discover, searchMovies, getGenres, addToWatchlist };
